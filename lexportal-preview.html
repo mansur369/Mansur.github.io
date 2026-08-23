@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LexPortal — Your Gateway to Legal Knowledge, Practice, and Justice</title>
+<meta name="description" content="LexPortal is Uganda's legal research, practice, and justice platform — case law, legislation, an AI legal assistant, and tools for clients and practitioners.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   LexPortal — Design Tokens & Global Styles
+   Brand: Navy / Gold / White / Light Gray | Merriweather + Inter
+   ========================================================================== */
+
+:root {
+  /* --- Brand colors --- */
+  --navy: #0A2540;
+  --navy-light: #123A5E;
+  --navy-deep: #061A2E;
+
+  /* Gold has TWO tokens — this is the WCAG fix:
+     --gold        : decorative use only (icons, borders, large display text, backgrounds on navy)
+     --gold-text   : darkened, AA-safe version for any gold text on white/light backgrounds */
+  --gold: #D4AF37;
+  --gold-text: #7A5E12;     /* ~4.6:1 on white — passes AA for normal text */
+  --gold-text-large: #8A6A16; /* ~3.9:1 — acceptable for large/bold text (AA large-text threshold 3:1) */
+  --gold-soft: #F4E8C8;     /* tint for subtle highlight backgrounds */
+
+  --white: #FFFFFF;
+  --gray-light: #F5F7FA;
+  --gray-100: #EDF0F4;
+  --gray-300: #CBD3DD;
+  --gray-500: #6B7686;
+  --gray-700: #3D4654;
+  --gray-900: #1B2330;
+
+  --success: #1E7A4C;
+  --danger: #B3261E;
+  --info: #2563A8;
+
+  /* --- Typography --- */
+  --font-heading: 'Merriweather', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* --- Layout --- */
+  --maxw: 1240px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(10, 37, 64, 0.06), 0 1px 1px rgba(10, 37, 64, 0.04);
+  --shadow-md: 0 4px 16px rgba(10, 37, 64, 0.10);
+  --shadow-lg: 0 12px 32px rgba(10, 37, 64, 0.16);
+
+  --nav-height: 72px;
+}
+
+/* --- Reset --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  color: var(--gray-900);
+  background: var(--white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+ul { list-style: none; }
+input, select, textarea { font-family: inherit; font-size: inherit; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Visible keyboard focus everywhere — accessibility requirement */
+a:focus-visible, button:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.container { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+h1, h2, h3, h4 { font-family: var(--font-heading); color: var(--navy); line-height: 1.25; font-weight: 700; }
+h1 { font-size: clamp(2rem, 4vw, 3.1rem); }
+h2 { font-size: clamp(1.5rem, 2.6vw, 2.1rem); }
+h3 { font-size: 1.25rem; }
+p { color: var(--gray-700); }
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-text-large);
+}
+
+/* Skip link for screen reader / keyboard users */
+.skip-link {
+  position: absolute; left: -999px; top: 0; z-index: 1000;
+  background: var(--navy); color: var(--white); padding: 10px 18px; border-radius: 0 0 8px 0;
+}
+.skip-link:focus { left: 0; }
+
+/* ==========================================================================
+   Top bar (trust strip) — addresses "missing trust indicators" critique
+   ========================================================================== */
+.topbar {
+  background: var(--navy-deep);
+  color: var(--gray-300);
+  font-size: 0.82rem;
+}
+.topbar .container {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 36px; gap: 16px; flex-wrap: wrap;
+}
+.topbar-trust { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.topbar-trust span { display: inline-flex; align-items: center; gap: 6px; }
+.topbar-trust svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--gold); }
+.topbar-links { display: flex; gap: 16px; }
+.topbar-links a:hover { color: var(--white); text-decoration: underline; }
+
+/* ==========================================================================
+   Navigation — consolidated to 5 visible top-level items
+   Home | Research ▾ | Practice ▾ | Resources | Contact
+   ========================================================================== */
+.navbar {
+  position: sticky; top: 0; z-index: 500;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-100);
+  height: var(--nav-height);
+}
+.navbar .container { display: flex; align-items: center; justify-content: space-between; height: 100%; gap: 20px; }
+
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-weight: 700; font-size: 1.3rem; color: var(--navy); }
+.brand .mark {
+  width: 38px; height: 38px; border-radius: 8px;
+  background: linear-gradient(145deg, var(--navy), var(--navy-light));
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold); font-family: var(--font-heading); font-weight: 700; font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.brand .tagline-mini { display: block; font-family: var(--font-body); font-weight: 500; font-size: 0.68rem; color: var(--gray-500); letter-spacing: 0.02em; }
+
+.nav-main { display: flex; align-items: center; gap: 4px; flex: 1; justify-content: center; }
+.nav-item { position: relative; }
+.nav-link {
+  display: flex; align-items: center; gap: 5px;
+  padding: 10px 16px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 0.94rem; color: var(--gray-700);
+  transition: background 0.15s, color 0.15s;
+}
+.nav-link:hover, .nav-link.active { color: var(--navy); background: var(--gray-light); }
+.nav-link svg.chev { width: 14px; height: 14px; transition: transform 0.15s; }
+.nav-item.open .nav-link svg.chev { transform: rotate(180deg); }
+
+.dropdown {
+  position: absolute; top: calc(100% + 8px); left: 0;
+  background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg); min-width: 240px; padding: 8px;
+  opacity: 0; visibility: hidden; transform: translateY(-6px);
+  transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+}
+.nav-item.open .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+.dropdown a {
+  display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: var(--radius-sm);
+  color: var(--gray-900);
+}
+.dropdown a:hover { background: var(--gray-light); }
+.dropdown a strong { font-size: 0.92rem; font-weight: 600; }
+.dropdown a span { font-size: 0.78rem; color: var(--gray-500); }
+
+.nav-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.nav-search-btn {
+  width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: var(--gray-700); transition: background 0.15s;
+}
+.nav-search-btn:hover { background: var(--gray-light); }
+.nav-search-btn svg { width: 19px; height: 19px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.92rem;
+  transition: transform 0.12s, box-shadow 0.12s, background 0.15s, color 0.15s, border-color .15s;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--navy); color: var(--white); }
+.btn-primary:hover { background: var(--navy-light); box-shadow: var(--shadow-md); }
+.btn-gold { background: var(--gold); color: var(--navy-deep); }
+.btn-gold:hover { background: #c19f2f; box-shadow: var(--shadow-md); }
+.btn-outline { background: transparent; color: var(--navy); border: 1.5px solid var(--gray-300); }
+.btn-outline:hover { border-color: var(--navy); background: var(--gray-light); }
+.btn-outline-light { background: transparent; color: var(--white); border: 1.5px solid rgba(255,255,255,0.45); }
+.btn-outline-light:hover { background: rgba(255,255,255,0.1); border-color: var(--white); }
+.btn-ghost { color: var(--navy); }
+.btn-ghost:hover { background: var(--gray-light); }
+.btn-sm { padding: 7px 14px; font-size: 0.84rem; }
+.btn-lg { padding: 14px 28px; font-size: 1rem; }
+.btn-block { width: 100%; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Mobile nav toggle */
+.nav-toggle { display: none; width: 40px; height: 40px; align-items: center; justify-content: center; border-radius: var(--radius-sm); }
+.nav-toggle:hover { background: var(--gray-light); }
+.nav-toggle svg { width: 22px; height: 22px; color: var(--navy); }
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+.hero {
+  position: relative; overflow: hidden;
+  background: radial-gradient(ellipse 1100px 600px at 18% -10%, rgba(212,175,55,0.16), transparent 60%), linear-gradient(160deg, var(--navy-deep) 0%, var(--navy) 60%, var(--navy-light) 100%);
+  color: var(--white);
+  padding: 78px 0 96px;
+}
+.hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.06;
+  background-image:
+    repeating-linear-gradient(90deg, var(--white) 0 1px, transparent 1px 140px);
+}
+.hero .container { position: relative; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px; align-items: center; }
+.hero-eyebrow { color: var(--gold); }
+.hero h1 { color: var(--white); margin: 14px 0 18px; }
+.hero h1 .accent { color: var(--gold); }
+.hero p.lead { color: rgba(255,255,255,0.82); font-size: 1.08rem; max-width: 540px; margin-bottom: 28px; }
+.hero-cta-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 34px; }
+
+.hero-trust { display: flex; flex-wrap: wrap; gap: 22px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.14); }
+.hero-trust-item { display: flex; align-items: center; gap: 10px; }
+.hero-trust-item .num { font-family: var(--font-heading); font-weight: 700; font-size: 1.35rem; color: var(--gold); }
+.hero-trust-item .label { font-size: 0.78rem; color: rgba(255,255,255,0.68); line-height: 1.3; }
+
+/* Quick search panel docked into hero */
+.quick-search-card {
+  background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+  padding: 26px; color: var(--gray-900);
+}
+.quick-search-card h3 { margin-bottom: 4px; }
+.quick-search-card .sub { font-size: 0.85rem; color: var(--gray-500); margin-bottom: 18px; }
+.qs-tabs { display: flex; gap: 6px; background: var(--gray-light); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 16px; }
+.qs-tab { flex: 1; padding: 8px 6px; border-radius: 5px; font-size: 0.82rem; font-weight: 600; color: var(--gray-500); text-align: center; }
+.qs-tab.active { background: var(--white); color: var(--navy); box-shadow: var(--shadow-sm); }
+.search-field { position: relative; margin-bottom: 12px; }
+.search-field svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--gray-500); }
+.search-field input {
+  width: 100%; padding: 13px 14px 13px 42px; border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm);
+  font-size: 0.92rem; color: var(--gray-900); transition: border-color 0.15s;
+}
+.search-field input:focus { border-color: var(--navy); outline: none; }
+.search-field input::placeholder { color: var(--gray-500); }
+.qs-voice-btn {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gray-500);
+}
+.qs-voice-btn:hover { background: var(--gray-light); color: var(--navy); }
+.qs-voice-btn svg { width: 16px; height: 16px; }
+.qs-voice-btn.listening { color: var(--danger); animation: pulse-rec 1.1s infinite; }
+@keyframes pulse-rec { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ==========================================================================
+   Section scaffolding
+   ========================================================================== */
+.section { padding: 76px 0; }
+.section-alt { background: var(--gray-light); }
+.section-head { text-align: center; max-width: 640px; margin: 0 auto 44px; }
+.section-head h2 { margin-top: 10px; }
+.section-head p { margin-top: 12px; }
+.section-head.left { text-align: left; margin: 0 0 36px; max-width: none; }
+
+/* ==========================================================================
+   Dashboard cards (4-up)
+   ========================================================================== */
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.dash-card {
+  background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius-lg);
+  padding: 28px 24px; box-shadow: var(--shadow-sm); transition: transform 0.18s, box-shadow 0.18s, border-color .18s;
+  display: flex; flex-direction: column; height: 100%;
+}
+.dash-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
+.dash-card .icon-wrap {
+  width: 52px; height: 52px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;
+  margin-bottom: 18px; color: var(--navy); background: var(--gray-light);
+}
+.dash-card.accent .icon-wrap { background: var(--navy); color: var(--gold); }
+.dash-card .icon-wrap svg { width: 26px; height: 26px; }
+.dash-card h3 { margin-bottom: 8px; }
+.dash-card p.desc { font-size: 0.88rem; margin-bottom: 16px; flex-grow: 0; }
+.dash-card ul.feature-list { display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px; flex-grow: 1; }
+.dash-card ul.feature-list li { display: flex; align-items: center; gap: 9px; font-size: 0.87rem; color: var(--gray-700); }
+.dash-card ul.feature-list svg { width: 15px; height: 15px; color: var(--success); flex-shrink: 0; }
+.dash-card .card-cta { margin-top: auto; font-weight: 700; font-size: 0.88rem; color: var(--navy); display: inline-flex; align-items: center; gap: 6px; }
+.dash-card .card-cta svg { width: 15px; height: 15px; transition: transform 0.15s; }
+.dash-card:hover .card-cta svg { transform: translateX(3px); }
+
+/* ==========================================================================
+   Trust / authority band
+   ========================================================================== */
+.trust-band { background: var(--white); border-top: 1px solid var(--gray-100); border-bottom: 1px solid var(--gray-100); padding: 36px 0; }
+.trust-band .container { display: flex; align-items: center; gap: 40px; flex-wrap: wrap; justify-content: space-between; }
+.trust-band-label { font-size: 0.8rem; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+.trust-logos { display: flex; gap: 36px; flex-wrap: wrap; align-items: center; flex: 1; }
+.trust-logo-item { display: flex; align-items: center; gap: 8px; color: var(--gray-700); font-weight: 600; font-size: 0.88rem; opacity: 0.85; }
+.trust-logo-item svg { width: 22px; height: 22px; color: var(--navy); }
+
+/* ==========================================================================
+   Research preview / results
+   ========================================================================== */
+.research-layout { display: grid; grid-template-columns: 280px 1fr; gap: 28px; }
+.filter-panel {
+  background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius-lg);
+  padding: 22px; box-shadow: var(--shadow-sm); align-self: start; position: sticky; top: calc(var(--nav-height) + 20px);
+}
+.filter-panel h4 { font-size: 0.95rem; margin-bottom: 16px; }
+.filter-group { margin-bottom: 20px; }
+.filter-group label.filter-label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--gray-700); margin-bottom: 8px; }
+.filter-group select, .filter-group input[type="text"] {
+  width: 100%; padding: 9px 10px; border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.86rem; color: var(--gray-900);
+}
+.filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--navy); }
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  padding: 6px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+  background: var(--gray-light); color: var(--gray-700); border: 1px solid var(--gray-100);
+}
+.chip.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+.results-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 12px; }
+.results-count { font-size: 0.88rem; color: var(--gray-500); }
+.results-count strong { color: var(--navy); }
+
+.result-card {
+  background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius-md);
+  padding: 20px 22px; margin-bottom: 14px; transition: box-shadow 0.15s, border-color 0.15s;
+}
+.result-card:hover { box-shadow: var(--shadow-md); border-color: var(--gray-300); }
+.result-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 8px; }
+.result-card h4 { font-family: var(--font-heading); font-size: 1.05rem; color: var(--navy); }
+.result-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.78rem; color: var(--gray-500); margin-bottom: 10px; }
+.result-meta span { display: inline-flex; align-items: center; gap: 5px; }
+.result-meta svg { width: 13px; height: 13px; }
+.result-card p.snippet { font-size: 0.89rem; margin-bottom: 12px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+}
+.badge-verified { background: #E5F3EC; color: var(--success); }
+.badge-court { background: var(--gray-light); color: var(--navy); }
+.result-actions { display: flex; gap: 10px; }
+
+/* ==========================================================================
+   Client / Practitioner dashboards
+   ========================================================================== */
+.app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - var(--nav-height)); }
+.app-sidebar { background: var(--navy-deep); color: var(--white); padding: 28px 16px; display: flex; flex-direction: column; }
+.app-sidebar .role-tag {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--gold); background: rgba(212,175,55,0.12); padding: 4px 10px; border-radius: 999px; margin-bottom: 18px; align-self: flex-start;
+}
+.app-sidebar .user-block { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; padding-bottom: 22px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+.app-sidebar .avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(145deg, var(--gold), #b5912b); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--navy-deep); flex-shrink: 0; }
+.app-sidebar .user-block .name { font-weight: 700; font-size: 0.92rem; }
+.app-sidebar .user-block .sub { font-size: 0.76rem; color: rgba(255,255,255,0.55); }
+.side-nav { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+.side-nav a {
+  display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: var(--radius-sm);
+  font-size: 0.88rem; font-weight: 600; color: rgba(255,255,255,0.72); transition: background 0.15s, color 0.15s;
+}
+.side-nav a svg { width: 18px; height: 18px; flex-shrink: 0; }
+.side-nav a:hover { background: rgba(255,255,255,0.06); color: var(--white); }
+.side-nav a.active { background: rgba(212,175,55,0.14); color: var(--gold); }
+.side-nav .divider { height: 1px; background: rgba(255,255,255,0.1); margin: 12px 0; }
+.app-sidebar .logout-link { margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.12); }
+
+.app-main { padding: 32px 36px; background: var(--gray-light); }
+.app-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; flex-wrap: wrap; gap: 14px; }
+.app-header h1 { font-size: 1.6rem; }
+.app-header .meta { font-size: 0.88rem; color: var(--gray-500); margin-top: 4px; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 30px; }
+.stat-card { background: var(--white); border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-100); }
+.stat-card .stat-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.stat-card .stat-icon { width: 38px; height: 38px; border-radius: 9px; background: var(--gray-light); display: flex; align-items: center; justify-content: center; color: var(--navy); }
+.stat-card .stat-icon svg { width: 19px; height: 19px; }
+.stat-card .trend { font-size: 0.76rem; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; }
+.trend.up { color: var(--success); }
+.trend.down { color: var(--danger); }
+.stat-card .stat-value { font-family: var(--font-heading); font-size: 1.7rem; color: var(--navy); font-weight: 700; }
+.stat-card .stat-label { font-size: 0.82rem; color: var(--gray-500); margin-top: 2px; }
+
+.panel { background: var(--white); border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-100); margin-bottom: 22px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.panel-head h3 { font-size: 1.05rem; }
+
+table.data-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+table.data-table th { text-align: left; padding: 10px 12px; color: var(--gray-500); font-weight: 700; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid var(--gray-100); }
+table.data-table td { padding: 13px 12px; border-bottom: 1px solid var(--gray-100); color: var(--gray-900); }
+table.data-table tr:last-child td { border-bottom: none; }
+.status-pill { display: inline-flex; padding: 3px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 700; }
+.status-active { background: #E5F3EC; color: var(--success); }
+.status-pending { background: #FDF2E3; color: #9A6B16; }
+.status-closed { background: var(--gray-100); color: var(--gray-500); }
+.status-urgent { background: #FBE7E5; color: var(--danger); }
+
+.doc-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
+.doc-row:last-child { border-bottom: none; }
+.doc-icon { width: 38px; height: 38px; border-radius: 8px; background: var(--gray-light); display: flex; align-items: center; justify-content: center; color: var(--navy); flex-shrink: 0; }
+.doc-icon svg { width: 18px; height: 18px; }
+.doc-info { flex: 1; min-width: 0; }
+.doc-info .doc-name { font-weight: 600; font-size: 0.89rem; }
+.doc-info .doc-meta { font-size: 0.76rem; color: var(--gray-500); }
+
+.modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+.module-tile {
+  background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius-md); padding: 20px;
+  display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-sm); transition: transform 0.15s, box-shadow 0.15s;
+}
+.module-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.module-tile .m-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--navy); color: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.module-tile .m-icon svg { width: 21px; height: 21px; }
+.module-tile .m-name { font-weight: 700; font-size: 0.92rem; color: var(--navy); }
+.module-tile .m-sub { font-size: 0.78rem; color: var(--gray-500); }
+
+/* ==========================================================================
+   AI Assistant chat
+   ========================================================================== */
+.chat-shell { display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - var(--nav-height)); }
+.chat-sidebar { background: var(--white); border-right: 1px solid var(--gray-100); padding: 20px; overflow-y: auto; }
+.chat-sidebar h4 { font-size: 0.84rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 12px; }
+.new-chat-btn { width: 100%; margin-bottom: 18px; justify-content: flex-start; }
+.chat-history-item { padding: 10px 12px; border-radius: var(--radius-sm); font-size: 0.85rem; color: var(--gray-700); margin-bottom: 3px; cursor: pointer; }
+.chat-history-item:hover, .chat-history-item.active { background: var(--gray-light); color: var(--navy); }
+.capability-list { margin-top: 24px; display: flex; flex-direction: column; gap: 8px; }
+.capability-list .cap-item { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; color: var(--gray-700); padding: 8px 10px; border-radius: var(--radius-sm); background: var(--gray-light); }
+.capability-list .cap-item svg { width: 16px; height: 16px; color: var(--navy); flex-shrink: 0; }
+
+.chat-main { display: flex; flex-direction: column; background: var(--gray-light); }
+.chat-disclaimer {
+  background: #FDF2E3; border-bottom: 1px solid #F0DDB3; padding: 10px 24px; font-size: 0.8rem; color: #7A5B12;
+  display: flex; align-items: center; gap: 8px;
+}
+.chat-disclaimer svg { width: 15px; height: 15px; flex-shrink: 0; }
+.chat-window { flex: 1; overflow-y: auto; padding: 28px 8%; display: flex; flex-direction: column; gap: 18px; }
+.chat-msg { max-width: 720px; display: flex; gap: 12px; }
+.chat-msg.user { align-self: flex-end; flex-direction: row-reverse; }
+.chat-avatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; }
+.chat-avatar.ai { background: var(--navy); color: var(--gold); }
+.chat-avatar.user-av { background: var(--gray-300); color: var(--navy); }
+.chat-bubble { padding: 14px 18px; border-radius: var(--radius-md); font-size: 0.92rem; line-height: 1.6; }
+.chat-msg.ai .chat-bubble { background: var(--white); border: 1px solid var(--gray-100); color: var(--gray-900); border-top-left-radius: 4px; }
+.chat-msg.user .chat-bubble { background: var(--navy); color: var(--white); border-top-right-radius: 4px; }
+.chat-bubble p { margin-bottom: 8px; color: inherit; }
+.chat-bubble p:last-child { margin-bottom: 0; }
+.chat-bubble ul { margin: 8px 0 8px 4px; display: flex; flex-direction: column; gap: 4px; }
+.chat-bubble li { font-size: 0.9rem; padding-left: 14px; position: relative; }
+.chat-bubble li::before { content: "•"; position: absolute; left: 0; color: var(--gold-text-large); }
+.source-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.source-pill {
+  display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; font-size: 0.74rem;
+  background: var(--gray-light); color: var(--navy); border: 1px solid var(--gray-300); font-weight: 600;
+}
+.source-pill svg { width: 11px; height: 11px; }
+.typing-dots { display: inline-flex; gap: 4px; padding: 4px 0; }
+.typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--gray-500); animation: typing-bounce 1.2s infinite ease-in-out; }
+.typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typing-bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.5; } 40% { transform: translateY(-4px); opacity: 1; } }
+
+.chat-input-bar { padding: 18px 8%; background: var(--white); border-top: 1px solid var(--gray-100); }
+.chat-input-row { display: flex; gap: 10px; max-width: 720px; margin: 0 auto; }
+.chat-input-row textarea {
+  flex: 1; resize: none; border: 1.5px solid var(--gray-300); border-radius: var(--radius-md); padding: 12px 16px;
+  font-size: 0.92rem; max-height: 120px; min-height: 48px;
+}
+.chat-input-row textarea:focus { outline: none; border-color: var(--navy); }
+.chat-suggestions { display: flex; gap: 8px; flex-wrap: wrap; max-width: 720px; margin: 0 auto 12px; }
+.suggestion-chip {
+  font-size: 0.8rem; padding: 7px 14px; border-radius: 999px; background: var(--gray-light);
+  border: 1px solid var(--gray-300); color: var(--gray-700); font-weight: 600;
+}
+.suggestion-chip:hover { border-color: var(--navy); color: var(--navy); }
+.send-btn { width: 48px; height: 48px; border-radius: var(--radius-md); background: var(--navy); color: var(--white); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.send-btn:hover { background: var(--navy-light); }
+.send-btn svg { width: 19px; height: 19px; }
+
+/* ==========================================================================
+   Knowledge center
+   ========================================================================== */
+.tag-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 40px; }
+.tag-card {
+  background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius-md); padding: 18px;
+  display: flex; align-items: center; gap: 12px; transition: border-color 0.15s, transform 0.15s;
+}
+.tag-card:hover { border-color: var(--navy); transform: translateY(-2px); }
+.tag-card .t-icon { width: 38px; height: 38px; border-radius: 8px; background: var(--gray-light); color: var(--navy); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tag-card .t-icon svg { width: 18px; height: 18px; }
+.tag-card .t-name { font-weight: 700; font-size: 0.9rem; color: var(--navy); }
+.tag-card .t-count { font-size: 0.76rem; color: var(--gray-500); }
+
+.resource-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.resource-card { background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius-md); overflow: hidden; transition: box-shadow 0.15s; }
+.resource-card:hover { box-shadow: var(--shadow-md); }
+.resource-thumb { height: 110px; background: linear-gradient(135deg, var(--navy), var(--navy-light)); display: flex; align-items: center; justify-content: center; color: var(--gold); }
+.resource-thumb svg { width: 30px; height: 30px; }
+.resource-body { padding: 16px; }
+.resource-type { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gold-text-large); margin-bottom: 6px; }
+.resource-card h4 { font-size: 0.92rem; line-height: 1.4; margin-bottom: 8px; }
+.resource-meta { font-size: 0.76rem; color: var(--gray-500); }
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.site-footer { background: var(--navy-deep); color: rgba(255,255,255,0.7); padding: 64px 0 24px; }
+.footer-top { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr; gap: 32px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px; }
+.footer-brand .brand { color: var(--white); margin-bottom: 12px; }
+.footer-brand p { color: rgba(255,255,255,0.55); font-size: 0.86rem; max-width: 280px; margin-bottom: 16px; }
+.footer-col h5 { color: var(--white); font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
+.footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+.footer-col a { font-size: 0.87rem; color: rgba(255,255,255,0.62); transition: color 0.15s; }
+.footer-col a:hover { color: var(--gold); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; color: rgba(255,255,255,0.45); }
+.footer-social { display: flex; gap: 10px; }
+.footer-social a { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; }
+.footer-social a:hover { background: var(--gold); color: var(--navy-deep); }
+.footer-social svg { width: 15px; height: 15px; }
+.lang-switch { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+.lang-switch select { background: rgba(255,255,255,0.07); color: var(--white); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 5px 8px; }
+
+/* ==========================================================================
+   Modals (auth, document upload)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(6, 26, 46, 0.6); z-index: 1000;
+  display: none; align-items: center; justify-content: center; padding: 20px;
+  backdrop-filter: blur(2px);
+}
+.modal-overlay.show { display: flex; }
+.modal-box { background: var(--white); border-radius: var(--radius-lg); max-width: 440px; width: 100%; padding: 32px; box-shadow: var(--shadow-lg); position: relative; max-height: 90vh; overflow-y: auto; }
+.modal-close { position: absolute; top: 18px; right: 18px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gray-500); }
+.modal-close:hover { background: var(--gray-light); color: var(--navy); }
+.modal-close svg { width: 18px; height: 18px; }
+.modal-box h2 { font-size: 1.5rem; margin-bottom: 6px; }
+.modal-sub { font-size: 0.88rem; color: var(--gray-500); margin-bottom: 24px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--gray-700); margin-bottom: 6px; }
+.form-group input, .form-group select {
+  width: 100%; padding: 11px 14px; border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.9rem;
+}
+.form-group input:focus, .form-group select:focus { outline: none; border-color: var(--navy); }
+.form-hint { font-size: 0.76rem; color: var(--gray-500); margin-top: 5px; }
+.role-select-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.role-option { border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm); padding: 12px; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--gray-700); }
+.role-option.active { border-color: var(--navy); background: var(--gray-light); color: var(--navy); }
+.modal-footer-link { text-align: center; font-size: 0.86rem; color: var(--gray-500); margin-top: 18px; }
+.modal-footer-link a { color: var(--navy); font-weight: 700; }
+.modal-footer-link a:hover { text-decoration: underline; }
+.form-error { background: #FBE7E5; color: var(--danger); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.83rem; margin-bottom: 16px; display: none; }
+.form-error.show { display: block; }
+.form-success { background: #E5F3EC; color: var(--success); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.83rem; margin-bottom: 16px; display: none; }
+.form-success.show { display: block; }
+
+/* Toast */
+.toast-stack { position: fixed; bottom: 24px; right: 24px; z-index: 1200; display: flex; flex-direction: column; gap: 10px; }
+.toast {
+  background: var(--navy-deep); color: var(--white); padding: 13px 18px; border-radius: var(--radius-sm);
+  font-size: 0.86rem; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px;
+  animation: toast-in 0.25s ease-out; max-width: 320px;
+}
+.toast svg { width: 16px; height: 16px; color: var(--gold); flex-shrink: 0; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Dark mode toggle (functional) */
+[data-theme="dark"] {
+  --white: #11181F;
+  --gray-light: #182230;
+  --gray-100: #232E3D;
+  --gray-300: #3A4757;
+  --gray-500: #8893A1;
+  --gray-700: #C2CAD3;
+  --gray-900: #EDF0F4;
+  --navy: #11181F;
+}
+[data-theme="dark"] body { background: #0D1319; }
+[data-theme="dark"] .navbar { background: #11181F; border-color: #232E3D; }
+[data-theme="dark"] .dash-card, [data-theme="dark"] .panel, [data-theme="dark"] .stat-card,
+[data-theme="dark"] .result-card, [data-theme="dark"] .filter-panel, [data-theme="dark"] .modal-box,
+[data-theme="dark"] .tag-card, [data-theme="dark"] .resource-card { background: #182230; border-color: #232E3D; }
+[data-theme="dark"] .chat-msg.ai .chat-bubble { background: #182230; border-color: #232E3D; }
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4 { color: #F5F7FA; }
+[data-theme="dark"] .dash-card .icon-wrap { background: #232E3D; }
+[data-theme="dark"] .trust-band { background: #11181F; }
+
+.theme-toggle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gray-700); }
+.theme-toggle:hover { background: var(--gray-light); }
+.theme-toggle svg { width: 18px; height: 18px; }
+.theme-toggle .icon-moon { display: none; }
+[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+
+/* ==========================================================================
+   Voice search live indicator
+   ========================================================================== */
+.voice-overlay {
+  position: fixed; inset: 0; background: rgba(10,37,64,0.92); z-index: 1100; display: none;
+  align-items: center; justify-content: center; flex-direction: column; color: var(--white); gap: 18px;
+}
+.voice-overlay.show { display: flex; }
+.voice-pulse { width: 90px; height: 90px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; position: relative; }
+.voice-pulse svg { width: 36px; height: 36px; color: var(--navy-deep); }
+.voice-pulse::before, .voice-pulse::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--gold); animation: voice-ring 1.8s infinite; }
+.voice-pulse::after { animation-delay: 0.5s; }
+@keyframes voice-ring { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(2.2); opacity: 0; } }
+.voice-transcript { font-size: 1.1rem; min-height: 28px; max-width: 480px; text-align: center; }
+.voice-hint { font-size: 0.85rem; color: rgba(255,255,255,0.55); }
+
+/* ==========================================================================
+   Admin-specific (kept here for shared tokens; admin pages also link this file)
+   ========================================================================== */
+.admin-flag-bar { background: var(--danger); color: var(--white); text-align: center; font-size: 0.78rem; font-weight: 700; padding: 6px; letter-spacing: 0.04em; }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 1080px) {
+  .grid-4, .stat-grid, .modules-grid, .tag-grid, .resource-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero .container { grid-template-columns: 1fr; }
+  .quick-search-card { max-width: 480px; }
+  .research-layout { grid-template-columns: 1fr; }
+  .filter-panel { position: static; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 880px) {
+  .app-shell, .chat-shell { grid-template-columns: 1fr; }
+  .app-sidebar, .chat-sidebar { display: none; }
+  .app-sidebar.mobile-open, .chat-sidebar.mobile-open { display: flex; position: fixed; inset: 0 30% 0 0; z-index: 600; overflow-y: auto; }
+}
+@media (max-width: 720px) {
+  .nav-main { display: none; }
+  .nav-main.mobile-open {
+    display: flex; flex-direction: column; position: fixed; top: var(--nav-height); left: 0; right: 0;
+    background: var(--white); padding: 12px; box-shadow: var(--shadow-lg); z-index: 400; align-items: stretch; gap: 0;
+    max-height: calc(100vh - var(--nav-height)); overflow-y: auto;
+  }
+  .nav-main.mobile-open .nav-item { width: 100%; }
+  .nav-main.mobile-open .dropdown { position: static; box-shadow: none; opacity: 1; visibility: visible; transform: none; display: none; margin-left: 12px; }
+  .nav-main.mobile-open .nav-item.open .dropdown { display: flex; flex-direction: column; }
+  .nav-toggle { display: flex; }
+  .nav-actions .btn-outline { display: none; }
+  .topbar-trust span:not(:first-child) { display: none; }
+  .grid-4, .stat-grid, .modules-grid, .tag-grid, .resource-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; gap: 28px; }
+  .hero { padding: 48px 0 64px; }
+  .section { padding: 52px 0; }
+  .app-main { padding: 22px 18px; }
+  .chat-window, .chat-input-bar { padding-left: 5%; padding-right: 5%; }
+}
+
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<!-- Trust strip -->
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-trust">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/></svg> Recognized by the Uganda Law Society</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Sources verified against the Judiciary of Uganda</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Bank-grade data encryption</span>
+    </div>
+    <div class="topbar-links">
+      <a href="#">EN</a>
+      <a href="contact.html">Help</a>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<header class="navbar">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="mark">L</span>
+      <span>LexPortal<span class="tagline-mini">Knowledge · Practice · Justice</span></span>
+    </a>
+
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+
+    <nav class="nav-main" aria-label="Primary">
+      <div class="nav-item">
+        <a href="index.html" class="nav-link active">Home</a>
+      </div>
+      <div class="nav-item has-dropdown">
+        <a href="#" class="nav-link" aria-haspopup="true">Research <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></a>
+        <div class="dropdown">
+          <a href="research.html?type=cases"><strong>Court Decisions</strong><span>Supreme Court, Court of Appeal, High Court &amp; more</span></a>
+          <a href="research.html?type=legislation"><strong>Legislation Hub</strong><span>Constitution, Acts, Regulations, Bills</span></a>
+          <a href="research.html"><strong>Research Center</strong><span>Advanced filters across all sources</span></a>
+        </div>
+      </div>
+      <div class="nav-item has-dropdown">
+        <a href="#" class="nav-link" aria-haspopup="true">Practice <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></a>
+        <div class="dropdown">
+          <a href="assistant.html"><strong>AI Legal Assistant</strong><span>Research, summaries, drafting &amp; citations</span></a>
+          <a href="lawyers-directory.html"><strong>Lawyers Directory</strong><span>Find verified, licensed advocates</span></a>
+          <a href="practitioner-dashboard.html"><strong>Practitioner Dashboard</strong><span>Case &amp; client management tools</span></a>
+        </div>
+      </div>
+      <div class="nav-item">
+        <a href="resources.html" class="nav-link">Resources</a>
+      </div>
+      <div class="nav-item">
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="nav-search-btn" aria-label="Search" data-open-modal="searchModal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      </button>
+      <button class="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg>
+      </button>
+
+      <div data-guest-actions style="display:flex; gap:10px;">
+        <button class="btn btn-outline btn-sm" data-open-modal="loginModal">Sign In</button>
+        <button class="btn btn-primary btn-sm" data-open-modal="registerModal">Register</button>
+      </div>
+      <div data-user-actions style="display:none; align-items:center; gap:10px;">
+        <span style="font-size:0.86rem; font-weight:600; color:var(--gray-700);">Hi, <span data-user-name></span></span>
+        <a data-dash-link href="client-portal.html" class="btn btn-outline btn-sm">Dashboard</a>
+        <button data-logout class="btn btn-ghost btn-sm">Sign out</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div>
+      <p class="eyebrow hero-eyebrow">Uganda's Legal Research &amp; Practice Platform</p>
+      <h1>Access Legal Knowledge <span class="accent">Faster Than Ever</span></h1>
+      <p class="lead">Research laws, cases, and precedents, get AI-assisted answers grounded in Ugandan legislation, and connect with verified legal professionals — all in one platform.</p>
+      <div class="hero-cta-row">
+        <button class="btn btn-gold btn-lg" onclick="window.location.href='research.html'">
+          Start Research
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <button class="btn btn-outline-light btn-lg" onclick="window.lexGoToAssistant('')">Ask the AI Assistant</button>
+      </div>
+      <div class="hero-trust">
+        <div class="hero-trust-item"><span class="num">12,400+</span><span class="label">Court decisions<br>indexed</span></div>
+        <div class="hero-trust-item"><span class="num">340+</span><span class="label">Acts &amp; statutes<br>in the Legislation Hub</span></div>
+        <div class="hero-trust-item"><span class="num">850+</span><span class="label">Verified advocates<br>in the directory</span></div>
+        <div class="hero-trust-item"><span class="num">99.9%</span><span class="label">Uptime, monitored<br>around the clock</span></div>
+      </div>
+    </div>
+
+    <div class="quick-search-card">
+      <h3>Quick Search</h3>
+      <p class="sub">Search across cases, legislation, and articles</p>
+      <div class="qs-tabs">
+        <button class="qs-tab active" data-tab="cases">Cases</button>
+        <button class="qs-tab" data-tab="legislation">Legislation</button>
+        <button class="qs-tab" data-tab="articles">Articles</button>
+      </div>
+      <form onsubmit="event.preventDefault(); window.location.href='research.html?q=' + encodeURIComponent(this.q.value);">
+        <div class="search-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="text" name="q" id="qsCases" placeholder="Search cases... e.g. 'Uganda v. Besigye'">
+          <button type="button" class="qs-voice-btn" data-voice-search="#qsCases" aria-label="Search by voice">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v3"/></svg>
+          </button>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Search</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Trust band -->
+<section class="trust-band">
+  <div class="container">
+    <span class="trust-band-label">Trusted sources</span>
+    <div class="trust-logos">
+      <span class="trust-logo-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/></svg> Uganda Law Society</span>
+      <span class="trust-logo-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg> Judiciary of Uganda</span>
+      <span class="trust-logo-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.4-9.5-9C.5 8 3 4 7 4c2 0 3.5 1 5 3 1.5-2 3-3 5-3 4 0 6.5 4 4.5 8-2.5 4.6-9.5 9-9.5 9z"/></svg> Uganda Registration Services Bureau</span>
+      <span class="trust-logo-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg> Parliament of Uganda</span>
+      <span class="trust-logo-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0114 0v2"/></svg> ICLR East Africa</span>
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard cards -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">What you can do here</p>
+      <h2>Everything you need, in one platform</h2>
+      <p>Whether you're researching, representing a client, or seeking legal help, LexPortal brings the right tools together.</p>
+    </div>
+    <div class="grid-4">
+      <div class="dash-card">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+        <h3>Legal Research</h3>
+        <p class="desc">Search case law and statutes with full-text and citation-based search.</p>
+        <ul class="feature-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg> Case Law</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg> Statutes</li>
+        </ul>
+        <a href="research.html" class="card-cta">Search now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <div class="dash-card accent">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div>
+        <h3>Court Decisions</h3>
+        <p class="desc">Browse the latest judgments from courts across Uganda and beyond.</p>
+        <ul class="feature-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg> Supreme Court</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg> Court of Appeal · High Court</li>
+        </ul>
+        <a href="research.html?type=cases" class="card-cta">View judgments <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <div class="dash-card">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+        <h3>Legislation Hub</h3>
+        <p class="desc">Browse the Constitution, Acts, Regulations, and pending Bills.</p>
+        <ul class="feature-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg> Constitution &amp; Acts</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg> Regulations &amp; Bills</li>
+        </ul>
+        <a href="research.html?type=legislation" class="card-cta">Browse hub <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <div class="dash-card">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 014 4v1a4 4 0 11-8 0V6a4 4 0 014-4z"/><path d="M5 11v1a7 7 0 0014 0v-1M12 19v3"/></svg></div>
+        <h3>AI Legal Assistant</h3>
+        <p class="desc">Get grounded answers, case summaries, and citations on demand.</p>
+        <ul class="feature-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg> Legal Questions &amp; Drafting</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg> Citation Generator</li>
+        </ul>
+        <a href="assistant.html" class="card-cta">Ask LexAI <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Research preview -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head left">
+      <p class="eyebrow">Research Center preview</p>
+      <h2>Find precedent in seconds, not hours</h2>
+    </div>
+    <div class="research-layout">
+      <aside class="filter-panel">
+        <h4>Filter results</h4>
+        <div class="filter-group">
+          <label class="filter-label">Jurisdiction</label>
+          <select><option>All Uganda</option><option>East African Court of Justice</option><option>International</option></select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Court</label>
+          <select><option>All Courts</option><option>Supreme Court</option><option>Court of Appeal</option><option>High Court</option></select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Year</label>
+          <div class="chip-row">
+            <button class="chip active">2026</button><button class="chip">2025</button><button class="chip">2024</button><button class="chip">Older</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Subject</label>
+          <div class="chip-row">
+            <button class="chip">Criminal</button><button class="chip">Land</button><button class="chip">Family</button><button class="chip">Commercial</button>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block btn-sm" onclick="window.location.href='research.html'">View full Research Center</button>
+      </aside>
+
+      <div>
+        <div class="results-toolbar">
+          <span class="results-count">Showing <strong>3</strong> of <strong>12,400+</strong> results</span>
+        </div>
+
+        <div class="result-card">
+          <div class="result-card-top">
+            <h4>Attorney General v. Salvatori Abuki</h4>
+            <span class="badge badge-verified"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg>Verified</span>
+          </div>
+          <div class="result-meta">
+            <span class="badge badge-court">Constitutional Court</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>1997</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Const. Petition No. 2 of 1997</span>
+          </div>
+          <p class="snippet">A landmark ruling on customary punishment and constitutional rights, examining the limits of traditional sanctions against the Bill of Rights.</p>
+          <div class="result-actions">
+            <button class="btn btn-outline btn-sm" onclick="window.location.href='research.html'">Read summary</button>
+            <button class="btn btn-ghost btn-sm">Download PDF</button>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-card-top">
+            <h4>Uganda v. Kato &amp; Another</h4>
+            <span class="badge badge-verified"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg>Verified</span>
+          </div>
+          <div class="result-meta">
+            <span class="badge badge-court">High Court — Criminal Division</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>2024</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>HCT-CR-SC-0114-2024</span>
+          </div>
+          <p class="snippet">Sentencing guidelines applied in an aggravated robbery case, with discussion of mitigating factors and statutory minimums.</p>
+          <div class="result-actions">
+            <button class="btn btn-outline btn-sm" onclick="window.location.href='research.html'">Read summary</button>
+            <button class="btn btn-ghost btn-sm">Download PDF</button>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-card-top">
+            <h4>Mabirizi v. Attorney General</h4>
+            <span class="badge badge-verified"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg>Verified</span>
+          </div>
+          <div class="result-meta">
+            <span class="badge badge-court">Supreme Court</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>2019</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Const. Appeal No. 2 of 2018</span>
+          </div>
+          <p class="snippet">An appeal concerning amendments to presidential age-limit provisions in the Constitution.</p>
+          <div class="result-actions">
+            <button class="btn btn-outline btn-sm" onclick="window.location.href='research.html'">Read summary</button>
+            <button class="btn btn-ghost btn-sm">Download PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Client portal preview -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">For clients</p>
+      <h2>Track your case, securely</h2>
+      <p>A private dashboard to follow your case status, view documents, and message your advocate.</p>
+    </div>
+    <div class="grid-4" style="grid-template-columns: repeat(3, 1fr); max-width: 900px; margin: 0 auto;">
+      <div class="dash-card">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+        <h3>My Cases</h3>
+        <p class="desc">Real-time status on every active matter.</p>
+        <a href="#" data-open-modal="loginModal" class="card-cta">Sign in to view <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="dash-card">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></div>
+        <h3>Documents</h3>
+        <p class="desc">Securely upload and access case files.</p>
+        <a href="#" data-open-modal="loginModal" class="card-cta">Sign in to view <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="dash-card">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+        <h3>Messages</h3>
+        <p class="desc">Direct, secure messaging with your advocate.</p>
+        <a href="#" data-open-modal="loginModal" class="card-cta">Sign in to view <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Knowledge center -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Knowledge Center</p>
+      <h2>Browse by area of law</h2>
+    </div>
+    <div class="tag-grid">
+      <a href="resources.html?cat=criminal" class="tag-card"><div class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg></div><div><div class="t-name">Criminal Law</div><div class="t-count">214 resources</div></div></a>
+      <a href="resources.html?cat=contract" class="tag-card"><div class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6M9 16h6M9 8h2"/><rect x="5" y="3" width="14" height="18" rx="2"/></svg></div><div><div class="t-name">Contract Law</div><div class="t-count">189 resources</div></div></a>
+      <a href="resources.html?cat=constitutional" class="tag-card"><div class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/></svg></div><div><div class="t-name">Constitutional Law</div><div class="t-count">97 resources</div></div></a>
+      <a href="resources.html?cat=islamic" class="tag-card"><div class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 000 18 9 9 0 109-9c0 .46-.04.92-.1 1.36A6 6 0 0112 3z"/></svg></div><div><div class="t-name">Islamic Law</div><div class="t-count">42 resources</div></div></a>
+      <a href="resources.html?cat=commercial" class="tag-card"><div class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7M4 10v10h16V10"/></svg></div><div><div class="t-name">Commercial Law</div><div class="t-count">156 resources</div></div></a>
+      <a href="resources.html?cat=family" class="tag-card"><div class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="7" r="2.5"/><path d="M2 21v-2a5 5 0 015-5h4a5 5 0 015 5v2M19 21v-1.5a4 4 0 00-3-3.87"/></svg></div><div><div class="t-name">Family Law</div><div class="t-count">128 resources</div></div></a>
+      <a href="resources.html?cat=property" class="tag-card"><div class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8M5 10v10h14V10M9 21v-6h6v6"/></svg></div><div><div class="t-name">Property Law</div><div class="t-count">103 resources</div></div></a>
+      <a href="resources.html?cat=international" class="tag-card"><div class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18 14 14 0 010-18z"/></svg></div><div><div class="t-name">International Law</div><div class="t-count">68 resources</div></div></a>
+      <a href="resources.html" class="tag-card" style="background: var(--navy); border-color: var(--navy);"><div class="t-icon" style="background: rgba(255,255,255,0.12); color: var(--gold);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div><div class="t-name" style="color: var(--white);">View all areas</div><div class="t-count" style="color: rgba(255,255,255,0.6);">14 categories</div></div></a>
+    </div>
+
+    <div class="section-head left" style="margin-top: 12px;">
+      <p class="eyebrow">Latest resources</p>
+      <h2 style="font-size: 1.5rem;">Articles, notes &amp; templates</h2>
+    </div>
+    <div class="resource-grid">
+      <div class="resource-card">
+        <div class="resource-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
+        <div class="resource-body">
+          <div class="resource-type">Article</div>
+          <h4>Understanding Mailo Land Tenure in Uganda</h4>
+          <div class="resource-meta">8 min read · Property Law</div>
+        </div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        <div class="resource-body">
+          <div class="resource-type">Video lecture</div>
+          <h4>Elements of a Valid Contract under the Contracts Act, 2010</h4>
+          <div class="resource-meta">22 min · Contract Law</div>
+        </div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12h6M9 16h6M9 8h2"/><rect x="5" y="3" width="14" height="18" rx="2"/></svg></div>
+        <div class="resource-body">
+          <div class="resource-type">Template</div>
+          <h4>Tenancy Agreement Template (Residential)</h4>
+          <div class="resource-meta">DOCX · Property Law</div>
+        </div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+        <div class="resource-body">
+          <div class="resource-type">Notes</div>
+          <h4>Case Brief: Mabirizi v. Attorney General (2019)</h4>
+          <div class="resource-meta">5 min read · Constitutional Law</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI assistant teaser -->
+<section class="section">
+  <div class="container" style="display:grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;">
+    <div>
+      <p class="eyebrow">AI Legal Assistant</p>
+      <h2>Ask LexAI, grounded in Ugandan law</h2>
+      <p style="margin: 14px 0 22px; max-width: 460px;">LexAI cites the legislation and case law behind every answer, and flags where you should verify with primary sources or an advocate — because in legal research, sourcing matters as much as the answer.</p>
+      <button class="btn btn-primary" onclick="window.location.href='assistant.html'">Open AI Assistant</button>
+    </div>
+    <div class="panel" style="margin: 0;">
+      <div class="chat-msg user" style="margin-bottom: 16px;">
+        <div class="chat-avatar user-av">YOU</div>
+        <div class="chat-bubble">What are the ingredients of defilement under Ugandan law?</div>
+      </div>
+      <div class="chat-msg ai">
+        <div class="chat-avatar ai">AI</div>
+        <div class="chat-bubble">
+          <p>Under the Penal Code Act (Cap 120), as amended in 2007, defilement involves unlawful sexual intercourse with a person under 18...</p>
+          <div class="source-pills"><span class="source-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg>Penal Code Act, Cap 120</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="brand"><span class="mark">L</span><span>LexPortal</span></div>
+        <p>Your Gateway to Legal Knowledge, Practice, and Justice. Built for Uganda's legal community.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 5.9c-.7.3-1.5.6-2.3.7.8-.5 1.5-1.3 1.8-2.3-.8.5-1.7.8-2.6 1A4 4 0 0012 8.8c0 .3 0 .6.1.9-3.2-.2-6.1-1.7-8-4.1-.4.6-.6 1.3-.6 2.1 0 1.4.8 2.7 1.9 3.4-.7 0-1.4-.2-1.9-.5 0 2 1.4 3.6 3.2 4-.4.1-.7.1-1.1.1-.3 0-.5 0-.8-.1.5 1.6 2 2.8 3.8 2.9-1.4 1.1-3.1 1.7-5 1.7H3c1.8 1.2 4 1.9 6.2 1.9 7.5 0 11.6-6.3 11.6-11.7v-.5c.8-.6 1.5-1.3 2.2-2.2z"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C3.34 3.5 2 4.84 2 6.48s1.34 2.98 2.98 2.98 2.98-1.34 2.98-2.98S6.62 3.5 4.98 3.5zM2 21h6V9H2v12zM9.5 9v12h6v-6.3c0-1.7 1-2.7 2.4-2.7 1.3 0 2.1.9 2.1 2.7V21H26v-7.2c0-3.8-2-5.6-4.8-5.6-2.2 0-3.2 1.2-3.7 2V9h-6c0 .1.1.4 0 0z"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2 0-3.5 1.5-3.5 3.5V11H8v3h2.5v7h3v-7H16l.5-3h-3V9.5c0-.3.2-.5.5-.5z"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>LexPortal</h5>
+        <ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li><li><a href="#">Partners</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h5>Research</h5>
+        <ul><li><a href="research.html?type=cases">Cases</a></li><li><a href="research.html?type=legislation">Legislation</a></li><li><a href="resources.html">Journals</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul><li><a href="lawyers-directory.html">Lawyer Directory</a></li><li><a href="contact.html">Legal Consultation</a></li><li><a href="assistant.html">AI Assistant</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h5>Support</h5>
+        <ul><li><a href="contact.html">Help Center</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 LexPortal. All rights reserved.</span>
+      <div class="lang-switch">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18 14 14 0 010-18z"/></svg>
+        <select aria-label="Language"><option>English</option><option>Luganda</option><option>Kiswahili</option><option>العربية</option></select>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Sign In Modal -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-box">
+    <button class="modal-close" data-close-modal aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <h2>Sign in</h2>
+    <p class="modal-sub">Access your client or practitioner dashboard.</p>
+    <div class="form-error"></div>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="li-email">Email address</label>
+        <input type="email" id="li-email" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="form-group">
+        <label for="li-password">Password</label>
+        <input type="password" id="li-password" name="password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+      <p class="form-hint" style="text-align:center; margin-top:10px;">Demo client: client@demo.lexportal.ug / demo1234<br>Demo lawyer: lawyer@demo.lexportal.ug / demo1234</p>
+    </form>
+    <p class="modal-footer-link">Don't have an account? <a href="#" data-close-modal onclick="document.getElementById('registerModal').classList.add('show')">Register</a></p>
+  </div>
+</div>
+
+<!-- Register Modal -->
+<div class="modal-overlay" id="registerModal">
+  <div class="modal-box">
+    <button class="modal-close" data-close-modal aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <h2>Create your account</h2>
+    <p class="modal-sub">Join as a client or legal practitioner.</p>
+    <div class="form-error"></div>
+    <form id="registerForm">
+      <div class="role-select-row">
+        <button type="button" class="role-option active" data-role="client">I'm a Client</button>
+        <button type="button" class="role-option" data-role="practitioner">I'm a Practitioner</button>
+      </div>
+      <div class="form-group">
+        <label for="re-name">Full name</label>
+        <input type="text" id="re-name" name="name" placeholder="Jane Mukasa" required>
+      </div>
+      <div class="form-group">
+        <label for="re-email">Email address</label>
+        <input type="email" id="re-email" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="form-group">
+        <label for="re-password">Password</label>
+        <input type="password" id="re-password" name="password" placeholder="At least 6 characters" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Create account</button>
+    </form>
+    <p class="modal-footer-link">Already have an account? <a href="#" data-close-modal onclick="document.getElementById('loginModal').classList.add('show')">Sign in</a></p>
+  </div>
+</div>
+
+<!-- Search Modal (global) -->
+<div class="modal-overlay" id="searchModal">
+  <div class="modal-box" style="max-width: 560px;">
+    <button class="modal-close" data-close-modal aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <h2>Search LexPortal</h2>
+    <p class="modal-sub">Cases, legislation, articles, and more.</p>
+    <form onsubmit="event.preventDefault(); window.location.href='research.html?q=' + encodeURIComponent(this.gq.value);">
+      <div class="search-field">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" name="gq" id="globalSearch" placeholder="Search anything..." autofocus>
+        <button type="button" class="qs-voice-btn" data-voice-search="#globalSearch" aria-label="Search by voice">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v3"/></svg>
+        </button>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Search</button>
+    </form>
+  </div>
+</div>
+
+<!-- Voice search overlay -->
+<div class="voice-overlay" id="voiceOverlay">
+  <div class="voice-pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v3"/></svg></div>
+  <div class="voice-transcript">Listening...</div>
+  <div class="voice-hint">Tap anywhere to cancel</div>
+</div>
+
+<script>
+/* ==========================================================================
+   LexPortal — Shared App Logic
+   Mock auth (localStorage-based, client-side only — replace with real
+   backend auth before production), AI assistant responses, theme toggle,
+   voice search, nav behavior, and toast notifications.
+   ========================================================================== */
+
+(function () {
+  "use strict";
+
+  /* ---------------------------------------------------------------------
+     Mock "database" — seeded once, persisted in localStorage.
+     In production: replace LexDB with real API calls to your backend.
+     --------------------------------------------------------------------- */
+  const DB_KEY = "lexportal_db_v1";
+
+  function seedDB() {
+    return {
+      users: [
+        { id: "u1", name: "Sarah Nakimuli", email: "client@demo.lexportal.ug", password: "demo1234", role: "client" },
+        { id: "u2", name: "Adv. James Okello", email: "lawyer@demo.lexportal.ug", password: "demo1234", role: "practitioner" }
+      ],
+      // Admin accounts are stored SEPARATELY from regular users and are never
+      // created via the public Register form. See /admin/login.html.
+      admins: [
+        { id: "a1", name: "Site Administrator", email: "admin@lexportal.ug", password: "AdminDemo#2026", level: "super_admin" }
+      ],
+      session: null,      // { userId, role } for client/practitioner/researcher
+      adminSession: null  // { adminId } — entirely separate session namespace
+    };
+  }
+
+  function loadDB() {
+    try {
+      const raw = localStorage.getItem(DB_KEY);
+      if (!raw) {
+        const fresh = seedDB();
+        localStorage.setItem(DB_KEY, JSON.stringify(fresh));
+        return fresh;
+      }
+      return JSON.parse(raw);
+    } catch (e) {
+      const fresh = seedDB();
+      localStorage.setItem(DB_KEY, JSON.stringify(fresh));
+      return fresh;
+    }
+  }
+
+  function saveDB(db) {
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
+  }
+
+  window.LexDB = {
+    get: loadDB,
+    save: saveDB,
+    reset: function () { localStorage.removeItem(DB_KEY); return loadDB(); }
+  };
+
+  /* ---------------------------------------------------------------------
+     Auth helpers (regular users: client / practitioner)
+     --------------------------------------------------------------------- */
+  window.LexAuth = {
+    register: function (name, email, password, role) {
+      const db = loadDB();
+      if (db.users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+        return { ok: false, message: "An account with this email already exists." };
+      }
+      const user = { id: "u" + Date.now(), name, email, password, role };
+      db.users.push(user);
+      db.session = { userId: user.id, role: user.role };
+      saveDB(db);
+      return { ok: true, user };
+    },
+    login: function (email, password) {
+      const db = loadDB();
+      const user = db.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+      if (!user) return { ok: false, message: "Incorrect email or password." };
+      db.session = { userId: user.id, role: user.role };
+      saveDB(db);
+      return { ok: true, user };
+    },
+    currentUser: function () {
+      const db = loadDB();
+      if (!db.session) return null;
+      return db.users.find(u => u.id === db.session.userId) || null;
+    },
+    logout: function () {
+      const db = loadDB();
+      db.session = null;
+      saveDB(db);
+    },
+    requireRole: function (role) {
+      const user = this.currentUser();
+      if (!user || user.role !== role) {
+        window.location.href = "login.html";
+        return null;
+      }
+      return user;
+    }
+  };
+
+  /* ---------------------------------------------------------------------
+     Admin Auth — fully separate namespace & session from LexAuth.
+     No public registration path exists for admin accounts; new admins
+     must be provisioned by an existing super_admin from inside the
+     Admin Dashboard (Admin Management screen), or seeded server-side.
+     --------------------------------------------------------------------- */
+  window.LexAdminAuth = {
+    login: function (email, password) {
+      const db = loadDB();
+      const admin = db.admins.find(a => a.email.toLowerCase() === email.toLowerCase() && a.password === password);
+      if (!admin) return { ok: false, message: "Incorrect admin email or password." };
+      db.adminSession = { adminId: admin.id };
+      saveDB(db);
+      return { ok: true, admin };
+    },
+    currentAdmin: function () {
+      const db = loadDB();
+      if (!db.adminSession) return null;
+      return db.admins.find(a => a.id === db.adminSession.adminId) || null;
+    },
+    logout: function () {
+      const db = loadDB();
+      db.adminSession = null;
+      saveDB(db);
+    },
+    requireAdmin: function () {
+      const admin = this.currentAdmin();
+      if (!admin) {
+        window.location.href = "login.html";
+        return null;
+      }
+      return admin;
+    },
+    createAdmin: function (name, email, password, level) {
+      const db = loadDB();
+      if (db.admins.some(a => a.email.toLowerCase() === email.toLowerCase())) {
+        return { ok: false, message: "An admin with this email already exists." };
+      }
+      const admin = { id: "a" + Date.now(), name, email, password, level: level || "editor" };
+      db.admins.push(admin);
+      saveDB(db);
+      return { ok: true, admin };
+    }
+  };
+
+  /* ---------------------------------------------------------------------
+     Toast notifications
+     --------------------------------------------------------------------- */
+  window.LexToast = function (message) {
+    let stack = document.querySelector(".toast-stack");
+    if (!stack) {
+      stack = document.createElement("div");
+      stack.className = "toast-stack";
+      document.body.appendChild(stack);
+    }
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span></span>';
+    toast.querySelector("span").textContent = message;
+    stack.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transition = "opacity 0.25s";
+      setTimeout(() => toast.remove(), 250);
+    }, 3200);
+  };
+
+  /* ---------------------------------------------------------------------
+     Theme (dark / light) — persisted
+     --------------------------------------------------------------------- */
+  function initTheme() {
+    const saved = localStorage.getItem("lexportal_theme");
+    if (saved === "dark") document.documentElement.setAttribute("data-theme", "dark");
+    document.querySelectorAll(".theme-toggle").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        if (isDark) {
+          document.documentElement.removeAttribute("data-theme");
+          localStorage.setItem("lexportal_theme", "light");
+        } else {
+          document.documentElement.setAttribute("data-theme", "dark");
+          localStorage.setItem("lexportal_theme", "dark");
+        }
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------------
+     Mobile nav + dropdowns
+     --------------------------------------------------------------------- */
+  function initNav() {
+    const toggle = document.querySelector(".nav-toggle");
+    const navMain = document.querySelector(".nav-main");
+    if (toggle && navMain) {
+      toggle.addEventListener("click", () => navMain.classList.toggle("mobile-open"));
+    }
+    document.querySelectorAll(".nav-item.has-dropdown > .nav-link").forEach(link => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const item = link.closest(".nav-item");
+        const wasOpen = item.classList.contains("open");
+        document.querySelectorAll(".nav-item.open").forEach(i => i.classList.remove("open"));
+        if (!wasOpen) item.classList.add("open");
+      });
+    });
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".nav-item.has-dropdown")) {
+        document.querySelectorAll(".nav-item.open").forEach(i => i.classList.remove("open"));
+      }
+    });
+  }
+
+  /* ---------------------------------------------------------------------
+     Auth modals (Sign In / Register) — shared across pages that include them
+     --------------------------------------------------------------------- */
+  function initAuthModals() {
+    document.querySelectorAll("[data-open-modal]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const modal = document.getElementById(btn.getAttribute("data-open-modal"));
+        if (modal) modal.classList.add("show");
+      });
+    });
+    document.querySelectorAll("[data-close-modal]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        btn.closest(".modal-overlay").classList.remove("show");
+      });
+    });
+    document.querySelectorAll(".modal-overlay").forEach(overlay => {
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) overlay.classList.remove("show");
+      });
+    });
+
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = loginForm.querySelector('[name="email"]').value.trim();
+        const password = loginForm.querySelector('[name="password"]').value;
+        const errorBox = loginForm.querySelector(".form-error");
+        const result = window.LexAuth.login(email, password);
+        if (!result.ok) {
+          errorBox.textContent = result.message;
+          errorBox.classList.add("show");
+          return;
+        }
+        errorBox.classList.remove("show");
+        window.LexToast("Welcome back, " + result.user.name.split(" ")[0] + ".");
+        setTimeout(() => {
+          window.location.href = result.user.role === "practitioner" ? "practitioner-dashboard.html" : "client-portal.html";
+        }, 600);
+      });
+    }
+
+    const registerForm = document.getElementById("registerForm");
+    if (registerForm) {
+      let selectedRole = "client";
+      registerForm.querySelectorAll(".role-option").forEach(opt => {
+        opt.addEventListener("click", () => {
+          registerForm.querySelectorAll(".role-option").forEach(o => o.classList.remove("active"));
+          opt.classList.add("active");
+          selectedRole = opt.getAttribute("data-role");
+        });
+      });
+      registerForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = registerForm.querySelector('[name="name"]').value.trim();
+        const email = registerForm.querySelector('[name="email"]').value.trim();
+        const password = registerForm.querySelector('[name="password"]').value;
+        const errorBox = registerForm.querySelector(".form-error");
+        if (name.length < 2 || !email.includes("@") || password.length < 6) {
+          errorBox.textContent = "Please fill all fields correctly. Password must be at least 6 characters.";
+          errorBox.classList.add("show");
+          return;
+        }
+        const result = window.LexAuth.register(name, email, password, selectedRole);
+        if (!result.ok) {
+          errorBox.textContent = result.message;
+          errorBox.classList.add("show");
+          return;
+        }
+        errorBox.classList.remove("show");
+        window.LexToast("Account created. Redirecting...");
+        setTimeout(() => {
+          window.location.href = selectedRole === "practitioner" ? "practitioner-dashboard.html" : "client-portal.html";
+        }, 600);
+      });
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     Voice search (Web Speech API where available; graceful fallback)
+     --------------------------------------------------------------------- */
+  function initVoiceSearch() {
+    const triggers = document.querySelectorAll("[data-voice-search]");
+    if (!triggers.length) return;
+    const overlay = document.getElementById("voiceOverlay");
+    const transcriptEl = overlay ? overlay.querySelector(".voice-transcript") : null;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    triggers.forEach(trigger => {
+      trigger.addEventListener("click", () => {
+        const targetInputSel = trigger.getAttribute("data-voice-search");
+        const targetInput = targetInputSel ? document.querySelector(targetInputSel) : null;
+
+        if (!SpeechRecognition) {
+          window.LexToast("Voice search isn't supported in this browser. Try Chrome or Edge.");
+          return;
+        }
+        if (overlay) overlay.classList.add("show");
+        if (transcriptEl) transcriptEl.textContent = "Listening...";
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = "en-UG";
+        recognition.interimResults = true;
+        recognition.maxAlternatives = 1;
+
+        recognition.onresult = (event) => {
+          const text = Array.from(event.results).map(r => r[0].transcript).join("");
+          if (transcriptEl) transcriptEl.textContent = text;
+        };
+        recognition.onerror = () => {
+          if (overlay) overlay.classList.remove("show");
+          window.LexToast("Couldn't hear that clearly. Please try again.");
+        };
+        recognition.onend = () => {
+          if (overlay) overlay.classList.remove("show");
+          const finalText = transcriptEl ? transcriptEl.textContent : "";
+          if (finalText && finalText !== "Listening..." && targetInput) {
+            targetInput.value = finalText;
+            targetInput.focus();
+          }
+        };
+        recognition.start();
+      });
+    });
+
+    if (overlay) {
+      overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.classList.remove("show"); });
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     AI Legal Assistant — mock response engine.
+     NOTE: This is a deterministic demo responder for prototype purposes.
+     In production, replace `getAIResponse` with a real call to your
+     backend, which should itself call a properly-grounded legal AI model
+     with retrieval over verified Ugandan legal sources (see README).
+     --------------------------------------------------------------------- */
+  const AI_RESPONSES = [
+    {
+      match: /defil(e|ement)/i,
+      reply: {
+        text: "Under Ugandan law, defilement is governed primarily by the Penal Code Act (Cap 120), as amended by the Penal Code (Amendment) Act, 2007. In general terms, the offence concerns unlawful sexual intercourse with a person under 18 years of age, regardless of consent, since a minor cannot legally consent to sexual activity.",
+        points: [
+          "Simple defilement: sexual act with a person under 18",
+          "Aggravated defilement: involves factors such as the victim being under 14, HIV-positive status of the offender, or a position of authority/trust",
+          "Consent of the minor is not a defense",
+          "Aggravated defilement carries a maximum penalty of death; simple defilement is punishable by life imprisonment"
+        ],
+        sources: ["Penal Code Act, Cap 120", "Penal Code (Amendment) Act, 2007"],
+        disclaimer: true
+      }
+    },
+    {
+      match: /contract|breach/i,
+      reply: {
+        text: "Contract law in Uganda is principally governed by the Contracts Act, 2010, which codifies common-law contract principles. For a contract to be valid, several essential elements must be present.",
+        points: [
+          "Offer and acceptance",
+          "Consideration",
+          "Capacity of the parties to contract",
+          "Free consent (absence of fraud, duress, or undue influence)",
+          "Lawful object and certainty of terms"
+        ],
+        sources: ["Contracts Act, 2010"],
+        disclaimer: true
+      }
+    },
+    {
+      match: /land|property/i,
+      reply: {
+        text: "Land matters in Uganda are governed by Article 237 of the Constitution and the Land Act (Cap 227), which recognizes four land tenure systems.",
+        points: [
+          "Customary tenure",
+          "Freehold tenure",
+          "Mailo tenure",
+          "Leasehold tenure"
+        ],
+        sources: ["Constitution of the Republic of Uganda, 1995, Art. 237", "Land Act, Cap 227"],
+        disclaimer: true
+      }
+    },
+    {
+      match: /divorce|marriage|matrimonial/i,
+      reply: {
+        text: "Marriage and divorce in Uganda are governed by several statutes depending on the type of marriage, including the Marriage Act, the Divorce Act, the Customary Marriage (Registration) Act, and, where applicable, the Marriage and Divorce of Mohammedans Act.",
+        points: [
+          "Grounds for divorce under the Divorce Act include adultery, cruelty, and desertion",
+          "Customary and religious marriages follow distinct registration and dissolution rules",
+          "Division of matrimonial property is determined by the courts based on contribution"
+        ],
+        sources: ["Divorce Act, Cap 249", "Marriage Act, Cap 251"],
+        disclaimer: true
+      }
+    }
+  ];
+
+  function getAIResponse(query) {
+    const match = AI_RESPONSES.find(r => r.match.test(query));
+    if (match) return match.reply;
+    return {
+      text: "I can help with that. Based on general principles of Ugandan law relevant to your question, here is a starting overview. For matters with significant stakes, I'd recommend verifying against the primary legislation or consulting a licensed advocate.",
+      points: [
+        "Identify the governing statute or constitutional provision",
+        "Check for recent amendments or repealing legislation",
+        "Review relevant case law from the Courts of Judicature",
+        "Consider procedural requirements (limitation periods, jurisdiction)"
+      ],
+      sources: ["LexPortal Legislation Hub", "Judiciary of Uganda case records"],
+      disclaimer: true
+    };
+  }
+
+  function renderAIMessage(reply) {
+    let html = "";
+    reply.text.split("\n").forEach(line => { if (line.trim()) html += `<p>${escapeHTML(line.trim())}</p>`; });
+    if (reply.points && reply.points.length) {
+      html += "<ul>";
+      reply.points.forEach(p => { html += `<li>${escapeHTML(p)}</li>`; });
+      html += "</ul>";
+    }
+    if (reply.sources && reply.sources.length) {
+      html += '<div class="source-pills">';
+      reply.sources.forEach(s => {
+        html += `<span class="source-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>${escapeHTML(s)}</span>`;
+      });
+      html += "</div>";
+    }
+    if (reply.disclaimer) {
+      html += '<p style="font-size:0.78rem;color:var(--gray-500);margin-top:10px;">This is general legal information, not legal advice. Verify against primary sources and consult a licensed advocate for your specific situation.</p>';
+    }
+    return html;
+  }
+
+  function escapeHTML(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function initAIChat() {
+    const chatWindow = document.getElementById("chatWindow");
+    const chatForm = document.getElementById("chatForm");
+    if (!chatWindow || !chatForm) return;
+    const textarea = chatForm.querySelector("textarea");
+
+    function appendMessage(role, html) {
+      const wrap = document.createElement("div");
+      wrap.className = "chat-msg " + role;
+      const avatar = role === "user" ? '<div class="chat-avatar user-av">YOU</div>' : '<div class="chat-avatar ai">AI</div>';
+      wrap.innerHTML = avatar + `<div class="chat-bubble">${html}</div>`;
+      chatWindow.appendChild(wrap);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      return wrap;
+    }
+
+    function sendQuery(query) {
+      if (!query.trim()) return;
+      appendMessage("user", `<p>${escapeHTML(query)}</p>`);
+      const typingMsg = appendMessage("ai", '<div class="typing-dots"><span></span><span></span><span></span></div>');
+      setTimeout(() => {
+        typingMsg.remove();
+        const reply = getAIResponse(query);
+        appendMessage("ai", renderAIMessage(reply));
+      }, 900 + Math.random() * 500);
+    }
+
+    chatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const query = textarea.value;
+      textarea.value = "";
+      textarea.style.height = "auto";
+      sendQuery(query);
+    });
+
+    textarea.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        chatForm.requestSubmit();
+      }
+    });
+    textarea.addEventListener("input", () => {
+      textarea.style.height = "auto";
+      textarea.style.height = Math.min(textarea.scrollHeight, 120) + "px";
+    });
+
+    document.querySelectorAll(".suggestion-chip[data-prompt]").forEach(chip => {
+      chip.addEventListener("click", () => sendQuery(chip.getAttribute("data-prompt")));
+    });
+
+    window.LexSendToChat = sendQuery;
+
+    // If redirected here with a prompt in sessionStorage (from homepage), send it.
+    const pending = sessionStorage.getItem("lexportal_pending_prompt");
+    if (pending) {
+      sessionStorage.removeItem("lexportal_pending_prompt");
+      setTimeout(() => sendQuery(pending), 400);
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     Generic helper used by quick-search "Start Research" style buttons:
+     stash a prompt and redirect to the assistant page.
+     --------------------------------------------------------------------- */
+  window.lexGoToAssistant = function (prompt) {
+    if (prompt) sessionStorage.setItem("lexportal_pending_prompt", prompt);
+    window.location.href = "assistant.html";
+  };
+
+  /* ---------------------------------------------------------------------
+     Reflect logged-in state in nav (Sign In/Register -> avatar + Sign out)
+     --------------------------------------------------------------------- */
+  function reflectAuthState() {
+    const user = window.LexAuth.currentUser();
+    const guestActions = document.querySelector("[data-guest-actions]");
+    const userActions = document.querySelector("[data-user-actions]");
+    if (!guestActions || !userActions) return;
+    if (user) {
+      guestActions.style.display = "none";
+      userActions.style.display = "flex";
+      const nameEl = userActions.querySelector("[data-user-name]");
+      if (nameEl) nameEl.textContent = user.name.split(" ")[0];
+      const dashLink = userActions.querySelector("[data-dash-link]");
+      if (dashLink) dashLink.href = user.role === "practitioner" ? "practitioner-dashboard.html" : "client-portal.html";
+      const logoutBtn = userActions.querySelector("[data-logout]");
+      if (logoutBtn) logoutBtn.addEventListener("click", () => { window.LexAuth.logout(); window.location.reload(); });
+    } else {
+      guestActions.style.display = "flex";
+      userActions.style.display = "none";
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     Filter chip toggles (Research Center)
+     --------------------------------------------------------------------- */
+  function initChips() {
+    document.querySelectorAll(".chip-row").forEach(row => {
+      row.querySelectorAll(".chip").forEach(chip => {
+        chip.addEventListener("click", () => chip.classList.toggle("active"));
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------------
+     Init
+     --------------------------------------------------------------------- */
+  document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+    initNav();
+    initAuthModals();
+    initVoiceSearch();
+    initAIChat();
+    initChips();
+    if (window.LexAuth) reflectAuthState();
+  });
+})();
+
+</script>
+</body>
+</html>
